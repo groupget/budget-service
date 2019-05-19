@@ -19,7 +19,8 @@ type Expense {
 }
 
 type Mutation {
-  addItem(newExpenseData: NewExpenseInput!): Expense!
+  addExpense(newExpenseData: NewExpenseInput!): Expense!
+  removeExpense(expenseId: String!): Expense!
 }
 
 input NewExpenseInput {
@@ -30,5 +31,17 @@ input NewExpenseInput {
 }
 
 type Query {
-  getItems(groupId: String!): [Expense!]!
+  getAllExpenses: [Expense!]!
+  getExpenses(groupId: String!): [Expense!]!
+  getUserTotalExpenses(groupId: String!): [UserTotalExpense!]!
+}
+
+type Subscription {
+  expenseAdded: Expense!
+  expenseRemoved: Expense!
+}
+
+type UserTotalExpense {
+  _id: ID!
+  totalAmount: Float!
 }

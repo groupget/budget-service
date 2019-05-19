@@ -4,10 +4,12 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule } from './config/config.module';
 import { MongooseConfigService } from './config/mongoose-config.service';
 import { BudgetModule } from './budget/budget.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
     ConfigModule,
+    NotificationsModule,
     MongooseModule.forRootAsync({ useClass: MongooseConfigService }),
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
