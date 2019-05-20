@@ -56,7 +56,7 @@ export class ExpensesService {
 
     private async notifyQueue(action: NotificationEventType, message: Expense) {
         return await this.notifier.publish({
-            resourceType: "item",
+            resourceType: "expense",
             type: action,
             message: message
         });

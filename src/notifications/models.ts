@@ -5,7 +5,7 @@ export enum ExchangeType {
 }
 
 export type NotificationEventType = "created" | "updated" | "deleted" | "item-checked" | "item-unchecked";
-export type NotificationEventResourceType = "item" | "list";
+export type NotificationEventResourceType = "item" | "list" | "expense";
 
 export class NotificationEvent {
     type: NotificationEventType;
