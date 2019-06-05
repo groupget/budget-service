@@ -5,6 +5,7 @@ import { Expense } from '../models/expense.model';
 import { ModelType } from 'typegoose';
 import { NotificationEventType } from '../../notifications/models';
 import { ProducerService } from '../../notifications/producer/producer.service';
+import { IUserInfo } from '../../common/decorators/user-decorator';
 
 @Injectable()
 export class ExpensesService {
@@ -22,19 +23,19 @@ export class ExpensesService {
         return await this.expenseModel.find({ groupId: groupId }).exec();
     }
 
-    public async addExpense(expense: NewExpenseInput) {
+    public async addExpense(expense: NewExpenseInput, user?: IUserInfo) {
         const expenseModel = new this.expenseModel(expense);
         const savedExpense = await expenseModel.save();
-        await this.notifyQueue("created", savedExpense);
+        await this.notifyQueue("created", savedExpense, user);
 
         return savedExpense;
     }
 
-    public async removeExpense(expenseId: string) {
+    public async removeExpense(expenseId: string, user?: IUserInfo) {
         const result = await this.expenseModel.findByIdAndDelete(expenseId);
 
         if (result !== null) {
-            await this.notifyQueue("deleted", result);
+            await this.notifyQueue("deleted", result, user);
         }
 
         return result;
@@ -54,11 +55,12 @@ export class ExpensesService {
         return this.expenseModel.aggregate(pipeline);
     }
 
-    private async notifyQueue(action: NotificationEventType, message: Expense) {
+    private async notifyQueue(action: NotificationEventType, message: Expense, user: IUserInfo) {
         return await this.notifier.publish({
             resourceType: "expense",
             type: action,
-            message: message
+            message: message,
+            userDetails: user
         });
     }
 }

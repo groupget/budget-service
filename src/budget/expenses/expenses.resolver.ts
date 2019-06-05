@@ -6,6 +6,7 @@ import { NewExpenseInput } from "../dto/new-expense.input";
 import { PubSubToken } from "../../common/provide-tokens";
 import { PubSub } from "graphql-subscriptions";
 import { UserTotalExpense } from "../models/user-total-expense.model";
+import { IUserInfo, UserInfo } from "../../common/decorators/user-decorator";
 
 @Resolver(of => Expense)
 export class ExpensesResolver {
@@ -31,16 +32,16 @@ export class ExpensesResolver {
     }
 
     @Mutation(returns => Expense)
-    async addExpense(@Args("newExpenseData") inputExpense: NewExpenseInput) {
-        const expense = await this.expenseService.addExpense(inputExpense);
+    async addExpense(@UserInfo() user: IUserInfo, @Args("newExpenseData") inputExpense: NewExpenseInput) {
+        const expense = await this.expenseService.addExpense(inputExpense, user);
         await this.pubSub.publish('expenseAdded', { expenseAdded: expense });
 
         return expense;
     }
 
     @Mutation(returns => Expense)
-    async removeExpense(@Args("expenseId") expenseId: string) {
-        const expense = await this.expenseService.removeExpense(expenseId);
+    async removeExpense(@UserInfo() user: IUserInfo, @Args("expenseId") expenseId: string) {
+        const expense = await this.expenseService.removeExpense(expenseId, user);
         await this.pubSub.publish('expenseRemoved', { expenseRemoved: expense });
 
         return expense;
